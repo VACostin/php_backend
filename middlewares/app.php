@@ -47,6 +47,11 @@ class Response {
 class App {
     private $middlewares = [];
     private $routes = [];
+    private $wildcardController;
+
+    public function __construct($wildcardController) {
+        $this->wildcardController = $wildcardController;
+    }
 
     public function use($middleware) {
         $this->middlewares[] = $middleware;
@@ -95,6 +100,10 @@ class App {
         if ($matchedRoute) {
             $controller = $matchedRoute['controller'];
             $controller($request, $response);
+        } elseif ($request->method === 'GET') {
+            // Handle undefined GET routes with a wildcard controller
+            $wildcardController = $this->wildcardController;
+            $wildcardController($request, $response);
         } else {
             $response->status(404)->send("Not Found");
         }
