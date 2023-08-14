@@ -3,15 +3,20 @@
 require_once 'middlewares/app.php';
 require_once 'middlewares/session_middleware.php';
 require_once 'middlewares/security_headers_middleware.php';
-require_once 'controllers/home_controller.php';
-require_once 'controllers/about_controller.php';
+require_once 'controllers/static_assets_controller.php';
+require_once 'controllers/user_controller.php';
 
-// Create an instance of ExpressApp
-$app = new App();
+$app = new App($staticAssetsController);
 $app->use($sessionMiddleware);
 $app->use($securityHeadersMiddleware);
-$app->get('/', $homeController);
-$app->get('/about', $aboutController);
 
-// Run the app
+$userController = new UserController();
+$app->get('/user/login', [$userController, 'login']);
+$app->get('/user/login/github', [$userController, 'loginGithub']);
+$app->get('/user/login/github/callback', [$userController, 'loginGithubCallback']);
+$app->get('/user/login/gitlab', [$userController, 'loginGitlab']);
+$app->get('/user/login/gitlab/callback', [$userController, 'loginGitlabCallback']);
+$app->get('/user/logout', [$userController, 'logout']);
+$app->get('/user/update', [$userController, 'update']);
+
 $app->run();
