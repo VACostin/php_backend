@@ -1,25 +1,18 @@
 <?php
+require_once 'models/oauth_model.php';
 class UserController
 {
-    public function login()
+    public function login($request, $response)
     {
-        if (isset($_SESSION['token'])) {
-            http_response_code(200);
-            echo "Authorized";
-        } else {
-            http_response_code(401);
-            echo "Unauthorized";
-        }
-    }
-    public function logout()
-    {
-        setcookie(session_id(), '', time() - 3600, '/');
-        session_destroy();
-        echo "Logged out!";
-    }
+        if (getEmail())
+            $response->send("Authorized");
+        else
+            $response->status(401)->send("Unauthorized");
 
-    public function update()
+    }
+    public function logout($request, $response)
     {
-        echo "Updating...";
+        destroySession();
+        $response->send("Logged out");
     }
 }
